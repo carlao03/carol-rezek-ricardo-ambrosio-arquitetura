@@ -1,15 +1,13 @@
 import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
 
 // Initialize Gemini Client safely
-const getApiKey = () => {
-  try {
-    return typeof process !== 'undefined' ? process.env.API_KEY : '';
-  } catch (e) {
-    return '';
-  }
+const getApiKey = (): string => {
+  // Vite usa import.meta.env para variáveis de ambiente
+  return import.meta.env.VITE_GEMINI_API_KEY || '';
 };
 
-const ai = new GoogleGenAI({ apiKey: getApiKey() || 'DUMMY_KEY' });
+const apiKey = getApiKey();
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 // System instruction to give the AI a persona
 const SYSTEM_INSTRUCTION = `
@@ -38,10 +36,10 @@ RESPOSTA:
 let chatSession: Chat | null = null;
 
 export const initializeChat = (): void => {
-  if (!chatSession) {
+  if (!chatSession && ai) {
     try {
       chatSession = ai.chats.create({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-2.0-flash',
         config: {
           systemInstruction: SYSTEM_INSTRUCTION,
         },
@@ -53,6 +51,10 @@ export const initializeChat = (): void => {
 };
 
 export const sendMessageToGemini = async (message: string): Promise<string> => {
+  if (!ai) {
+    return "Desculpe, o assistente está indisponível no momento. Por favor, use o formulário de contato.";
+  }
+
   if (!chatSession) {
     initializeChat();
   }
