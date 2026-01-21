@@ -1,20 +1,54 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🏛️ Carol Rezek & Ricardo Ambrósio Arquitetura
 
-# Run and deploy your AI Studio app
+Site institucional do escritório de arquitetura **Carol Rezek & Ricardo Ambrósio**.
 
-This contains everything you need to run your app locally.
+## 📋 Sobre o Projeto
 
-View your app in AI Studio: https://ai.studio/apps/drive/1EduIMI3FAe0-5XFRH-bV8yfeYuFLcpuR
+Website profissional desenvolvido para apresentar o portfólio, serviços e informações de contato do escritório de arquitetura.
 
-## Run Locally
+### ✨ Funcionalidades
 
-**Prerequisites:**  Node.js
+- 🏠 Página inicial com apresentação do escritório
+- 📁 Portfólio de projetos
+- 🛠️ Serviços oferecidos
+- 💬 Depoimentos de clientes
+- 📞 Formulário de contato
+- 🤖 Chat integrado com IA (Gemini)
+- 📱 Design responsivo
 
+## 🚀 Tecnologias Utilizadas
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- **React** - Biblioteca JavaScript para interfaces
+- **TypeScript** - Tipagem estática
+- **Vite** - Build tool e dev server
+- **Tailwind CSS** - Framework CSS
+- **Google Gemini API** - Integração com IA
+
+## 💻 Como Executar
+
+**Pré-requisitos:** Node.js
+
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/carlao03/carol-rezek-ricardo-ambrosio-arquitetura.git
+   ```
+
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
+
+3. Configure a variável de ambiente `GEMINI_API_KEY` no arquivo `.env.local`
+
+4. Execute o projeto:
+   ```bash
+   npm run dev
+   ```
+
+## 📄 Licença
+
+Este projeto é privado e de uso exclusivo do escritório Carol Rezek & Ricardo Ambrósio Arquitetura.
+
+---
+
+Desenvolvido com ❤️
