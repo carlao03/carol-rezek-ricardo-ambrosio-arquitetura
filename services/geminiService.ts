@@ -1,0 +1,75 @@
+import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
+
+// Initialize Gemini Client safely
+const getApiKey = () => {
+  try {
+    return typeof process !== 'undefined' ? process.env.API_KEY : '';
+  } catch (e) {
+    return '';
+  }
+};
+
+const ai = new GoogleGenAI({ apiKey: getApiKey() || 'DUMMY_KEY' });
+
+// System instruction to give the AI a persona
+const SYSTEM_INSTRUCTION = `
+Você é o assistente virtual sênior e qualificador de leads da "Carol Rezek & Ricardo Ambrósio Arquitetura".
+Seu tom é elegante, profissional, acolhedor e estratégico.
+
+SEU OBJETIVO:
+Além de tirar dúvidas, você deve gentilmente qualificar o visitante fazendo perguntas estratégicas durante a conversa para entender o perfil do cliente.
+
+ROTEIRO DE QUALIFICAÇÃO (Tente obter estas informações de forma natural):
+1. Tipo de Projeto: (Ex: Residencial, Comercial, Reforma, Interiores?)
+2. Localização: (Onde será a obra?)
+3. Expectativa de Investimento/Orçamento: (Se o cliente se sentir confortável em compartilhar).
+
+COMPORTAMENTO:
+- Não faça um interrogatório. Faça uma pergunta por vez enquanto responde as dúvidas do usuário.
+- Se o usuário perguntar preços, explique que cada projeto é único e que você precisa de mais detalhes para uma estimativa.
+- Ao final da conversa ou quando tiver as informações, sugira fortemente que ele preencha o formulário de contato abaixo ou agende uma reunião, mencionando que "Carol e Ricardo adorariam analisar esses detalhes pessoalmente".
+
+RESPOSTA:
+- Responda sempre em Português do Brasil.
+- Seja conciso e use parágrafos curtos.
+- Mantenha a aura de sofisticação da marca.
+`;
+
+let chatSession: Chat | null = null;
+
+export const initializeChat = (): void => {
+  if (!chatSession) {
+    try {
+      chatSession = ai.chats.create({
+        model: 'gemini-3-flash-preview',
+        config: {
+          systemInstruction: SYSTEM_INSTRUCTION,
+        },
+      });
+    } catch (error) {
+      console.error("Failed to create chat session:", error);
+    }
+  }
+};
+
+export const sendMessageToGemini = async (message: string): Promise<string> => {
+  if (!chatSession) {
+    initializeChat();
+  }
+
+  try {
+    if (!chatSession) {
+       // Fallback if session creation failed (e.g. invalid key)
+       return "Desculpe, o assistente está indisponível no momento. Por favor, use o formulário de contato.";
+    }
+    
+    const response: GenerateContentResponse = await chatSession.sendMessage({
+      message: message,
+    });
+    
+    return response.text || "Desculpe, não consegui processar sua resposta no momento.";
+  } catch (error) {
+    console.error("Error sending message to Gemini:", error);
+    return "Ocorreu um erro ao conectar com o assistente. Por favor, tente novamente mais tarde.";
+  }
+};
