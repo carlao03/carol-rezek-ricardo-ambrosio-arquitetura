@@ -1,4 +1,4 @@
-import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Initialize Gemini Client safely
 const getApiKey = (): string => {
@@ -7,7 +7,7 @@ const getApiKey = (): string => {
 };
 
 const apiKey = getApiKey();
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 
 // System instruction to give the AI a persona
 const SYSTEM_INSTRUCTION = `
@@ -33,43 +33,37 @@ RESPOSTA:
 - Mantenha a aura de sofisticação da marca.
 `;
 
-let chatSession: Chat | null = null;
+// Histórico de conversa para manter contexto
+let chatHistory: { role: string; parts: { text: string }[] }[] = [];
 
 export const initializeChat = (): void => {
-  if (!chatSession && ai) {
-    try {
-      chatSession = ai.chats.create({
-        model: 'gemini-2.0-flash',
-        config: {
-          systemInstruction: SYSTEM_INSTRUCTION,
-        },
-      });
-    } catch (error) {
-      console.error("Failed to create chat session:", error);
-    }
-  }
+  chatHistory = [];
 };
 
 export const sendMessageToGemini = async (message: string): Promise<string> => {
-  if (!ai) {
+  if (!genAI) {
     return "Desculpe, o assistente está indisponível no momento. Por favor, use o formulário de contato.";
   }
 
-  if (!chatSession) {
-    initializeChat();
-  }
-
   try {
-    if (!chatSession) {
-       // Fallback if session creation failed (e.g. invalid key)
-       return "Desculpe, o assistente está indisponível no momento. Por favor, use o formulário de contato.";
-    }
-    
-    const response: GenerateContentResponse = await chatSession.sendMessage({
-      message: message,
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      systemInstruction: SYSTEM_INSTRUCTION,
     });
-    
-    return response.text || "Desculpe, não consegui processar sua resposta no momento.";
+
+    const chat = model.startChat({
+      history: chatHistory,
+    });
+
+    const result = await chat.sendMessage(message);
+    const response = result.response;
+    const text = response.text();
+
+    // Atualiza o histórico
+    chatHistory.push({ role: "user", parts: [{ text: message }] });
+    chatHistory.push({ role: "model", parts: [{ text: text }] });
+
+    return text || "Desculpe, não consegui processar sua resposta no momento.";
   } catch (error) {
     console.error("Error sending message to Gemini:", error);
     return "Ocorreu um erro ao conectar com o assistente. Por favor, tente novamente mais tarde.";
