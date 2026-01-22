@@ -7,7 +7,6 @@ import { Services } from './components/Services';
 import { Testimonials } from './components/Testimonials';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
-import { ChatWidget } from './components/ChatWidget';
 
 const App: React.FC = () => {
   return (
@@ -22,7 +21,6 @@ const App: React.FC = () => {
         <Contact />
       </main>
       <Footer />
-      <ChatWidget />
     </div>
   );
 };
