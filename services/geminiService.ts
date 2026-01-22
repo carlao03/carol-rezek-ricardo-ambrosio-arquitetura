@@ -2,7 +2,6 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Initialize Gemini Client safely
 const getApiKey = (): string => {
-  // Vite usa import.meta.env para variáveis de ambiente
   return import.meta.env.VITE_GEMINI_API_KEY || '';
 };
 
@@ -47,7 +46,7 @@ export const sendMessageToGemini = async (message: string): Promise<string> => {
 
   try {
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-2.0-flash",
       systemInstruction: SYSTEM_INSTRUCTION,
     });
 
